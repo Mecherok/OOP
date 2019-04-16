@@ -6,6 +6,7 @@ namespace mathobj {
 
 	template<class T>
 	ostream& operator<<(ostream &output, const TPolynomial<T> &p) noexcept {
+		if (!p.arr) return output << 0.0;
 		if (p.degree == 0) return output << p.arr[0];
 		if (p.arr[p.degree] == 1) {
 			cout << "x^" << p.degree;
@@ -205,10 +206,8 @@ TPolynomial<T>::TPolynomial(TPolynomial<T> &&other) : TPolynomial<T>() {
 template<class T>
 void TPolynomial<T>::correctDegree() noexcept {
 	if (degree == 0) return;
-	if (arr[degree] == 0) {
-		do {
-			degree--;
-		} while (degree && arr[degree] == 0);
+	while (degree && arr[degree] == 0) {
+		degree--;
 	}
 }
 
@@ -255,7 +254,7 @@ TPolynomial<T>& TPolynomial<T>::operator=(const TPolynomial<T> &other) {
 			degree = other.degree;
 			arr = new T[degree + 1];
 		}
-		if (degree == 0) arr = new T[1];
+		if (degree == 0 && !arr) arr = new T[1];
 		for (int i = 0; i <= degree; i++) {
 			arr[i] = other.arr[i];
 		}
@@ -504,12 +503,12 @@ bool TPolynomial<T>::operator<(int degree) const noexcept {
 
 template<class T>
 bool TPolynomial<T>::operator>(const TPolynomial<T> &other) const noexcept {
-	return !TPolynomial<T>::operator<(other);
+	return degree > other.degree;
 }
 
 template<class T>
 bool TPolynomial<T>::operator>(int degree) const noexcept {
-	return !TPolynomial<T>::operator<(degree);
+	return this->degree > degree;
 }
 
 template<class T>

@@ -189,7 +189,7 @@ Fraction& Fraction::operator=(const Fraction &other) {
 }
 
 Fraction& Fraction::operator++() {
-	return Fraction::operator+=(1);
+	return Fraction::operator+=(Fraction(1));
 }
 
 Fraction Fraction::operator++(int) {
@@ -204,7 +204,7 @@ Fraction& Fraction::operator-() {
 }
 
 Fraction& Fraction::operator--() {
-	return Fraction::operator-=(1);
+	return Fraction::operator-=(Fraction(1));
 }
 
 Fraction Fraction::operator--(int) {

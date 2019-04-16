@@ -79,6 +79,7 @@ namespace mathobj {
 		static int getCount();
 		int getID() const;
 		TFraction<T>& getMixedFraction();
+		TFraction<T>& getImproperFraction();
 		TFraction<T>& operator=(const TFraction<T> &other);
 		TFraction<T>& operator=(TFraction<T> &&other);
 		TFraction<T>& operator+=(const TFraction<T> &other);
@@ -235,6 +236,13 @@ TFraction<T>& TFraction<T>::getMixedFraction() {
 }
 
 template<class T>
+TFraction<T>& TFraction<T>::getImproperFraction() {
+	numerator = sign * (intPart * denominator + numerator);
+	intPart = 0;
+	return *this;
+}
+
+template<class T>
 TFraction<T>& TFraction<T>::operator=(const TFraction<T>& other) {
 	if (this != &other) {
 		numerator = other.numerator;
@@ -258,10 +266,9 @@ TFraction<T>& TFraction<T>::operator=(TFraction<T>&& other) {
 		
 template<class T>
 TFraction<T>& TFraction<T>::operator+=(const TFraction<T>& other) {
-	numerator = sign * (intPart * denominator + numerator) *
-		other.denominator + other.sign * (other.intPart * other.denominator + other.numerator) * denominator;
-	denominator = denominator * other.denominator;
-	intPart = 0;
+	getImproperFraction();
+	numerator = numerator * other.denominator + other.sign * (other.intPart * other.denominator + other.numerator) * denominator;
+	denominator *= other.denominator;
 	sign = 1;
 	getMixedFraction();
 	return *this;
@@ -275,10 +282,9 @@ TFraction<T>& TFraction<T>::operator-() {
 	
 template<class T>
 TFraction<T>& TFraction<T>::operator-=(const TFraction<T>& other) {
-	numerator = sign * (intPart * denominator + numerator) *
-		other.denominator - other.sign * (other.intPart * other.denominator + other.numerator) * denominator;
-	denominator = denominator * other.denominator;
-	intPart = 0;
+	getImproperFraction();
+	numerator = numerator * other.denominator - other.sign * (other.intPart * other.denominator + other.numerator) * denominator;
+	denominator *= other.denominator;
 	sign = 1;
 	getMixedFraction();
 	return *this;
@@ -286,10 +292,9 @@ TFraction<T>& TFraction<T>::operator-=(const TFraction<T>& other) {
 
 template<class T>
 TFraction<T>& TFraction<T>::operator*=(const TFraction<T>& other) {
-	numerator = sign * (intPart * denominator + numerator) *
-		other.sign * (other.intPart * other.denominator + other.numerator);
-	denominator = denominator * other.denominator;
-	intPart = 0;
+	getImproperFraction();
+	numerator = numerator * other.sign * (other.intPart * other.denominator + other.numerator);
+	denominator *= other.denominator;
 	sign = 1;
 	getMixedFraction();
 	return *this;
