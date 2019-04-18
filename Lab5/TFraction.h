@@ -1,11 +1,12 @@
 #pragma once
+#include <iostream>
 
 namespace mathobj {
 	template<typename T>
 	class TFraction;
 
 	template <class T>
-	ostream& operator<<(ostream &output, const TFraction<T> &f) {
+	std::ostream& operator<<(std::ostream &output, const TFraction<T> &f) {
 		if (!f.intPart && !f.numerator) {
 			return output << "0";
 		}
@@ -67,9 +68,9 @@ namespace mathobj {
 		TFraction(const T& intPart, const T& numerator, const T& denominator, int sign);
 		TFraction(const TFraction<T> &other);
 		TFraction(TFraction<T> &&other);
-		int getIntPart() const;
-		int getNominator() const;
-		int getDenominator() const;
+		T getIntPart() const;
+		T getNominator() const;
+		T getDenominator() const;
 		int getSign() const;
 		double getDouble() const;
 		void setIntPart(const T& number);
@@ -169,17 +170,17 @@ TFraction<T>::TFraction(TFraction<T>&& other) : TFraction() {
 }
 	
 template<class T>
-int TFraction<T>::getIntPart() const {
+T TFraction<T>::getIntPart() const {
 	return intPart;
 }
 	
 template<class T>
-int TFraction<T>::getNominator() const {
+T TFraction<T>::getNominator() const {
 	return numerator;
 }
 	
 template<class T>
-int TFraction<T>::getDenominator() const {
+T TFraction<T>::getDenominator() const {
 	return denominator;
 }
 	

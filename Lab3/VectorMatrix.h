@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace mathobj {
 	class Base {
@@ -13,7 +14,7 @@ namespace mathobj {
 		Base(const Base &other);
 		Base(Base &&other);
 	private:
-		friend ostream& operator<<(ostream &output, const Base &m) noexcept;
+		friend std::ostream& operator<<(std::ostream &output, const Base &m) noexcept;
 		friend Base operator+(const Base &m1, const Base &m2);
 		friend Base operator-(const Base &m1, const Base &m2);
 		friend Base operator*(const Base &m1, const Base &m2);
@@ -43,12 +44,12 @@ namespace mathobj {
 	private:
 		static int countVect;
 	public:
-		Vector();
+		explicit Vector();
 		virtual ~Vector();
-		Vector(int size);
-		Vector(int size, double, ...);
-		Vector(int size, const double *arr);
-		Vector(int size, double (*func)(int));
+		explicit Vector(int size);
+		explicit Vector(int size, double, ...);
+		explicit Vector(int size, const double *arr);
+		explicit Vector(int size, double (*func)(int));
 		Vector(const Base &other);
 		Vector(Base &&other);
 		Vector(const Vector &other);
@@ -76,15 +77,15 @@ namespace mathobj {
 			double operator[](int j) const;
 		};
 	public:
-		Matrix();
+		explicit Matrix();
 		virtual ~Matrix();
-		Matrix(int row, int col);
-		Matrix(int row_col);
-		Matrix(int row, int col, double, ...);
-		Matrix(int row, int col, const double *arr);
-		Matrix(int row_col, const double *arr);
-		Matrix(int row, int col, double (*func)(int, int));
-		Matrix(int row_col, double (*func)(int, int));
+		explicit Matrix(int row, int col);
+		explicit Matrix(int row_col);
+		explicit Matrix(int row, int col, double, ...);
+		explicit Matrix(int row, int col, const double *arr);
+		explicit Matrix(int row_col, const double *arr);
+		explicit Matrix(int row, int col, double (*func)(int, int));
+		explicit Matrix(int row_col, double (*func)(int, int));
 		Matrix(const Base &other);
 		Matrix(Base &&other);
 		Matrix(const Matrix &other);

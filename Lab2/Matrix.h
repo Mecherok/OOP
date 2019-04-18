@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace mathobj {
 	class Matrix {
@@ -8,8 +9,8 @@ namespace mathobj {
 		int col;
 		static int count;
 		int ID;
-		friend istream& operator>>(istream &input, Matrix &m);
-		friend ostream& operator<<(ostream &output, const Matrix &m);
+		friend std::istream& operator>>(std::istream &input, Matrix &m);
+		friend std::ostream& operator<<(std::ostream &output, const Matrix &m);
 		friend Matrix operator+(const Matrix &m1, const Matrix &m2);
 		friend Matrix operator-(const Matrix &m1, const Matrix &m2);
 		friend Matrix operator*(const Matrix &m1, const Matrix &m2);
@@ -27,15 +28,15 @@ namespace mathobj {
 			double operator[](int j) const; // R-value - T, const T, const T&
 		};
 	public:
-		Matrix();
+		explicit Matrix();
 		~Matrix();
-		Matrix(int row, int col);
-		Matrix(int row_col);
-		Matrix(int row, int col, double, ...);
-		Matrix(int row, int col, const double *arr);
-		Matrix(int row_col, const double *arr);
-		Matrix(int row, int col, double (*func)(int, int));
-		Matrix(int row_col, double (*func)(int, int));
+		explicit Matrix(int row, int col);
+		explicit Matrix(int row_col);
+		explicit Matrix(int row, int col, double, ...);
+		explicit Matrix(int row, int col, const double *arr);
+		explicit Matrix(int row_col, const double *arr);
+		explicit Matrix(int row, int col, double (*func)(int, int));
+		explicit Matrix(int row_col, double (*func)(int, int));
 		Matrix(const Matrix &other);
 		Matrix(Matrix &&other);
 		bool checkSumOrSub(const Matrix &other) const;

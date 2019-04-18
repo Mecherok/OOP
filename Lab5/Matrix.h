@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace mathobj {
 	class Matrix {
@@ -8,8 +9,8 @@ namespace mathobj {
 		int col;
 		static int count;
 		int ID;
-		friend istream& operator>>(istream &input, Matrix &m);
-		friend ostream& operator<<(ostream &output, const Matrix &m);
+		friend std::istream& operator>>(std::istream &input, Matrix &m);
+		friend std::ostream& operator<<(std::ostream &output, const Matrix &m);
 		friend Matrix operator+(const Matrix &m1, const Matrix &m2);
 		friend Matrix operator-(const Matrix &m1, const Matrix &m2);
 		friend Matrix operator*(const Matrix &m1, const Matrix &m2);

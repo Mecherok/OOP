@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace mathobj {
 	class Polynomial {
@@ -8,19 +9,19 @@ namespace mathobj {
 		int ID;
 		static int count;
 		void correctDegree() noexcept;
-		friend ostream& operator<<(ostream &output, const Polynomial &p) noexcept;
+		friend std::ostream& operator<<(std::ostream &output, const Polynomial &p) noexcept;
 		friend Polynomial operator+(const Polynomial &p1, const Polynomial &p2);
 		friend Polynomial operator-(const Polynomial &p1, const Polynomial &p2);
 		friend Polynomial operator*(const Polynomial &p1, const Polynomial &p2);
 		friend Polynomial operator/(const Polynomial &p1, const Polynomial &p2);
 		friend Polynomial operator%(const Polynomial &p1, const Polynomial &p2);
 	public:
-		Polynomial();
+		explicit Polynomial();
 		~Polynomial();
-		Polynomial(int degree);
-		Polynomial(int degree, const double *arr);
-		Polynomial(int degree, double (*func)(int));
-		Polynomial(int degree, double el, ...);
+		explicit Polynomial(int degree);
+		explicit Polynomial(int degree, const double *arr);
+		explicit Polynomial(int degree, double (*func)(int));
+		explicit Polynomial(int degree, double el, ...);
 		Polynomial(const Polynomial &other);
 		Polynomial(Polynomial &&other);
 		int getDegree() const noexcept;

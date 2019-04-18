@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Fraction.h"
+
 using namespace mathobj;
+using namespace std;
 
 int Fraction::count = 0;
 
@@ -104,12 +106,11 @@ Fraction::Fraction(int intPart, int numerator, int denominator, int sign) {
 	count++;
 	ID = count;
 	if (denominator == 0) throw "Невозможно создать объект №" + to_string(ID) + ". Знаменатель не может быть равен 0!";
-	if (sign != 1 && sign != -1) throw "Невозможно создать объект №" + to_string(ID) + ". Неверный знак!";
 	if (intPart != 0 && (numerator < 0 || denominator < 0)) throw "Невозможно создать объект №" + to_string(ID) + ". Неверный формат данных!";
+	setSign(sign);
 	this->intPart = intPart;
 	this->numerator = numerator;
 	this->denominator = denominator;
-	this->sign = sign;
 	getMixedFraction();
 }
 

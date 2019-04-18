@@ -10,11 +10,9 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <iostream>
-#include <math.h>
 #include <string>
 #include <stdarg.h>
 #include <iomanip>
-using namespace std;
 
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

@@ -43,7 +43,7 @@ int main() {
 		cout << setw(5) << tm4 - tm4;
 		cout << setw(5) << tm4 * tm4;
 
-		Polynomial p1(2, 8.0, 4.0, 8.0);
+		/*Polynomial p1(2, 8.0, 4.0, 8.0);
 		Polynomial p(2, 4.0, 2.0, 4.0);
 		TFraction<Polynomial> td(p, p1);
 		cout << setw(5) << td << endl;
@@ -60,7 +60,7 @@ int main() {
 		cout << setw(5) << tp * tp << endl;
 		cout << setw(5) << tp / tp << endl;
 		cout << setw(5) << tp(2.0) << endl;
-		cout << setw(5) << tp[1] << endl;
+		cout << setw(5) << tp[1] << endl;*/
 	}
 	catch (const string &msg) {
 		cerr << msg << endl;

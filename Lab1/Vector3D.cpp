@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Vector3D.h"
+
 using namespace mathobj;
+using namespace std;
 
 int Vector3D::count = 0;
 

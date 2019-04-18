@@ -1,19 +1,33 @@
 #include "stdafx.h"
 #include "Polynomial.h"
+
 using namespace mathobj;
+using namespace std;
 
 int Polynomial::count = 0;
 
 void Polynomial::correctDegree() noexcept {
 	if (degree == 0) return;
+	bool update = false;
 	while (degree && arr[degree] == 0) {
 		degree--;
+		update = true;
+	}
+	if (update) {
+		double *temp = new double[degree + 1];
+		for (int i = 0; i <= degree; i++) {
+			temp[i] = arr[i];
+		}
+
+		arr = temp;
+		temp = nullptr;
 	}
 }
 
 ostream& mathobj::operator<<(ostream &output, const Polynomial &p) noexcept {
 	if (!p.arr) return output << 0.0;
 	if (p.degree == 0) return output << p.arr[0];
+	
 	if (p.arr[p.degree] == 1) {
 		cout << "x^" << p.degree;
 	}
@@ -38,7 +52,7 @@ ostream& mathobj::operator<<(ostream &output, const Polynomial &p) noexcept {
 				cout << " - " << "x^" << i;
 			}
 			else {
-				cout << " - " << (-1) * p.arr[i] << "x^" << i;
+				cout << " - " << -p.arr[i] << "x^" << i;
 			}
 		}
 	}
@@ -47,7 +61,7 @@ ostream& mathobj::operator<<(ostream &output, const Polynomial &p) noexcept {
 		cout << " + " << p.arr[0];
 	}
 	else if (p.arr[0] < 0) {
-		cout << " - " << (-1) * p.arr[0];
+		cout << " - " << -p.arr[0];
 	}
 
 	return output;
@@ -74,8 +88,8 @@ Polynomial mathobj::operator/(const Polynomial &p1, const Polynomial &p2) {
 }
 
 Polynomial mathobj::operator%(const Polynomial &p1, const Polynomial &p2) {
-	if (p1.degree < p2.degree || !p1.arr || !p2.arr) throw "Деление с остатком полиномов №" + to_string(p1.ID) + " и №" + to_string(p2.ID) + " невозможно!";
-	return Polynomial(p1) %= p2;
+	if (!p1.arr || !p2.arr) throw "Деление с остатком полиномов №" + to_string(p1.ID) + " и №" + to_string(p2.ID) + " невозможно!";
+	return move(Polynomial(p1) %= p2);
 }
 
 Polynomial::Polynomial() {
@@ -105,13 +119,13 @@ Polynomial::Polynomial(int degree, const double *arr) {
 		}
 	}
 	this->arr = new double[this->degree + 1];
-	for (int i = 0; i <= this->degree; i++) {
-		this->arr[i] = arr ? arr[i] : 0.0;
+	for (int i = this->degree, j = 0; i >= 0; i--, j++) {
+		this->arr[i] = arr ? arr[j] : 0.0;
 	}
 }
 
 Polynomial::Polynomial(int degree, double(*func)(int)) : Polynomial(degree) {
-	for (int i = 0; i <= this->degree; i++) {
+	for (int i = this->degree; i >= 0; i--) {
 		arr[i] = func(i);
 	}
 	correctDegree();
@@ -158,6 +172,7 @@ Polynomial& Polynomial::operator=(const Polynomial &other) {
 	if (this != &other) {
 		if (!other.arr) {
 			degree = 0;
+			if (arr) delete[] arr;
 			arr = nullptr;
 			return *this;
 		}
@@ -187,11 +202,11 @@ Polynomial& Polynomial::operator=(Polynomial &&other) {
 
 double Polynomial::operator()(double x) const {
 	if (!arr) throw "Невозмоно выполнить действие в нулевом полиноме №" + to_string(ID);
-	double sum = 0;
-	for (int i = degree; i > 0; i--) {
-		sum += arr[i] * pow(x, i);
+	double sum = arr[degree];
+	for (int i = 1; i <= degree; ++i) {
+		sum *= x;
+		sum += arr[degree - i];
 	}
-	sum += arr[0];
 
 	return sum;
 }
@@ -271,88 +286,39 @@ Polynomial& Polynomial::operator*=(const Polynomial &other) {
 }
 
 Polynomial& Polynomial::operator/=(const Polynomial &other) {
-	if (degree < other.degree || !arr || !other.arr) throw "Деление полиномов №" + to_string(ID) + " и №" + to_string(other.ID) + " невозможно!";
+	if (!arr || !other.arr) throw "Деление полиномов №" + to_string(ID) + " и №" + to_string(other.ID) + " невозможно!";
 
-	bool flag = true;
-	Polynomial temp(degree - other.degree);
-	Polynomial temp1(*this);
-	Polynomial temp2(other);
-	Polynomial temp3(temp1.degree);
+	if (degree < other.degree) return *this = Polynomial(0);
 
-	double gcd;
-	int k = 0;
-	while (flag) {
-		for (int i = other.degree; i >= 0; i--) {
-			temp3.arr[i] = other.arr[i];
+	Polynomial temp(*this);
+	Polynomial result(temp.degree - other.degree);
+	
+	for (int i = 0; i <= result.degree; i++) {
+		if (other.arr[other.degree] == 0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
+		result.arr[result.degree - i] = temp.arr[temp.degree - i] / other.arr[other.degree];
+		for (int j = 0; j <= other.degree; j++) {
+			temp.arr[temp.degree - j - i] -= other.arr[other.degree - j] * result.arr[result.degree - i];
 		}
-
-		if (temp2.degree < temp1.degree) {
-			for (int i = temp1.degree, j = temp2.degree; i >= 0; i--, j--) {
-				if (j < 0) {
-					temp3.arr[i] = 0;
-				}
-				else {
-					temp3.arr[i] = temp2.arr[j];
-				}
-			}
-		}
-
-		gcd = temp1.arr[temp1.degree] / temp3.arr[temp1.degree];
-
-		temp.arr[temp.degree - k] = gcd;
-		k++;
-
-		for (int i = 0; i <= temp1.degree; i++) {
-			temp3.arr[i] *= gcd;
-		}
-		for (int i = 0; i <= temp1.degree; i++) {
-			temp1.arr[i] -= temp3.arr[i];
-		}
-		temp1.degree == 0 ? flag = false : --temp1.degree;
-
-		if (temp2.degree > temp1.degree) flag = false;
 	}
 
-	temp.correctDegree();
-	return *this = move(temp);
+	result.correctDegree();
+	return *this = move(result);
 }
 
 Polynomial& Polynomial::operator%=(const Polynomial &other) {
-	if (degree < other.degree || !arr || !other.arr) throw "Деление с остатком полиномов №" + to_string(ID) + " и №" + to_string(other.ID) + " невозможно!";
+	if (!arr || !other.arr) throw "Деление с остатком полиномов №" + to_string(ID) + " и №" + to_string(other.ID) + " невозможно!";
 
-	bool flag = true;
+	if (degree < other.degree) return *this;
+
 	Polynomial temp(*this);
-	Polynomial temp1(other);
-	Polynomial temp2(temp.degree);
+	Polynomial result(temp.degree - other.degree);
 
-	double gcd;
-	while (flag) {
-		for (int i = other.degree; i >= 0; i--) {
-			temp2.arr[i] = other.arr[i];
+	for (int i = 0; i <= result.degree; i++) {
+		if (other.arr[other.degree] == 0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
+		result.arr[result.degree - i] = temp.arr[temp.degree - i] / other.arr[other.degree];
+		for (int j = 0; j <= other.degree; j++) {
+			temp.arr[temp.degree - j - i] -= other.arr[other.degree - j] * result.arr[result.degree - i];
 		}
-
-		if (temp1.degree < temp.degree) {
-			for (int i = temp.degree, j = temp1.degree; i >= 0; i--, j--)
-				if (j < 0) {
-					temp2.arr[i] = 0;
-				}
-				else {
-					temp2.arr[i] = temp1.arr[j];
-				}
-		}
-
-		gcd = temp.arr[temp.degree] / temp2.arr[temp.degree];
-
-		for (int i = 0; i <= temp.degree; i++) {
-			temp2.arr[i] *= gcd;
-		}
-
-		for (int i = 0; i <= temp.degree; i++) {
-			temp.arr[i] -= temp2.arr[i];
-		}
-		temp.degree == 0 ? flag = false : --temp.degree;
-
-		if (temp1.degree > temp.degree) flag = false;
 	}
 
 	temp.correctDegree();

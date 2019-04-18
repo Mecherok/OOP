@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace mathobj {
 	class Fraction {
@@ -12,7 +13,7 @@ namespace mathobj {
 		void simplification() noexcept;
 		void reduction() noexcept;
 		void IntPart() noexcept;
-		friend ostream& operator<<(ostream &output, const Fraction &f) noexcept;
+		friend std::ostream& operator<<(std::ostream &output, const Fraction &f) noexcept;
 		friend Fraction operator+(const Fraction &f1, const Fraction &f2);
 		friend Fraction operator-(const Fraction &f1, const Fraction &f2);
 		friend Fraction operator* (const Fraction &f1, const Fraction &f2);

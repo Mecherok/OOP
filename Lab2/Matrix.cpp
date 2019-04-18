@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Matrix.h"
+
 using namespace mathobj;
+using namespace std;
 
 int Matrix::count = 0;
 

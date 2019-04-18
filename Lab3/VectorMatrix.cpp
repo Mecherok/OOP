@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "VectorMatrix.h"
 using namespace mathobj;
+using namespace std;
 
 int Base::countBase = 0;
 int Matrix::countMtr = 0;

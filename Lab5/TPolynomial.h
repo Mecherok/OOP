@@ -1,11 +1,12 @@
 #pragma once
+#include <iostream>
 
 namespace mathobj {
 	template<typename T>
 	class TPolynomial;
 
 	template<class T>
-	ostream& operator<<(ostream &output, const TPolynomial<T> &p) noexcept {
+	std::ostream& operator<<(std::ostream &output, const TPolynomial<T> &p) noexcept {
 		if (!p.arr) return output << 0.0;
 		if (p.degree == 0) return output << p.arr[0];
 		if (p.arr[p.degree] == 1) {
