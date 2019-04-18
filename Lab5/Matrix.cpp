@@ -280,3 +280,27 @@ const Matrix::Tmp Matrix::operator[](int i) const {
 	if (i >= this->row || i < 0 || arr == nullptr) throw "Выход за размер массива в матрице №" + to_string(ID);
 	return Tmp(this, i);
 }
+
+bool Matrix::operator==(const Matrix &other) const {
+	return col == other.col && row == other.row;
+}
+
+bool Matrix::operator!=(const Matrix &other) const {
+	return !Matrix::operator==(other);
+}
+
+bool Matrix::operator>(const Matrix &other) const {
+	return col * row > other.col * other.row;
+}
+
+bool Matrix::operator<(const Matrix &other) const {
+	return col * row < other.col * other.row;
+}
+
+bool Matrix::operator>=(const Matrix &other) const {
+	return col * row >= other.col * other.row;
+}
+
+bool Matrix::operator<=(const Matrix &other) const {
+	return col * row <= other.col * other.row;
+}

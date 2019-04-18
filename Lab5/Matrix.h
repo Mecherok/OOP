@@ -55,5 +55,11 @@ namespace mathobj {
 		Matrix& operator*=(double k);
 		Tmp operator[](int i);
 		const Tmp operator[](int i) const;
+		bool operator==(const Matrix &other) const;
+		bool operator!=(const Matrix &other) const;
+		bool operator>(const Matrix &other) const;
+		bool operator<(const Matrix &other) const;
+		bool operator>=(const Matrix &other) const;
+		bool operator<=(const Matrix &other) const;
 	};
 }

@@ -1,12 +1,14 @@
 #pragma once
 #include <iostream>
 
+using namespace std;
+
 namespace mathobj {
 	template<typename T>
 	class TMatrix;
 	
 	template <class T>
-	std::ostream& operator<<(std::ostream &output, const TMatrix<T> &m) noexcept {
+	ostream& operator<<(ostream &output, const TMatrix<T> &m) noexcept {
 		for (int i = 0; i < m.row; i++) {
 			for (int j = 0; j < m.col; j++) {
 				output << m.arr[i * m.col + j] << setw(output.width());
@@ -21,7 +23,7 @@ namespace mathobj {
 
 	template <class T>
 	TMatrix<T> operator+(const TMatrix<T> &m1, const TMatrix<T> &m2) {
-		if (!m1.checkSumOrSub(m2)) throw "Внешний оператор - для шаблонных матриц №" + to_string(m1.ID) + " и №" + to_string(m2.ID) +
+		if (!m1.checkSumOrSub(m2)) throw "Внешний оператор + для шаблонных матриц №" + to_string(m1.ID) + " и №" + to_string(m2.ID) +
 			": Ошибка! Сложение невозможно!";
 
 		return move(TMatrix<T>(m1) += m2);
@@ -37,7 +39,7 @@ namespace mathobj {
 		
 	template <class T>
 	TMatrix<T> operator*(const TMatrix<T> &m1, const TMatrix<T> &m2) {
-		if (!m1.checkMul(m2)) throw "Внешний оператор - для шаблонных матриц №" + to_string(m1.ID) + " и №" + to_string(m2.ID) +
+		if (!m1.checkMul(m2)) throw "Внешний оператор * для шаблонных матриц №" + to_string(m1.ID) + " и №" + to_string(m2.ID) +
 			": Ошибка! Умножение невозможно!";
 		
 		TMatrix<T> tempMul(m1.row, m2.col);
@@ -102,8 +104,8 @@ namespace mathobj {
 		TMatrix(TMatrix<T> &&other);
 		bool checkSumOrSub(const TMatrix<T> &other) const noexcept;
 		bool checkMul(const TMatrix<T> &other) const noexcept;
-		T& max() const;
-		T& min() const;
+		T max() const;
+		T min() const;
 		static int getCount() noexcept;
 		int getID() const noexcept;
 		int getRow() const noexcept;
@@ -116,6 +118,12 @@ namespace mathobj {
 		TMatrix<T>& operator*=(const T& k);
 		Tmp operator[](int i);
 		const Tmp operator[](int i) const;
+		bool operator==(const TMatrix<T>& other) const;
+		bool operator!=(const TMatrix<T>& other) const;
+		bool operator>(const TMatrix<T>& other) const;
+		bool operator<(const TMatrix<T>& other) const;
+		bool operator>=(const TMatrix<T>& other) const;
+		bool operator<=(const TMatrix<T>& other) const;
 	};
 }
 
@@ -238,7 +246,7 @@ bool TMatrix<T>::checkMul(const TMatrix<T> &other) const noexcept {
 }
 
 template<class T>
-T& TMatrix<T>::max() const {
+T TMatrix<T>::max() const {
 	if (!arr) throw "Невозможно найти максимальный элемент в нулевой шаблонной матрице №" + to_string(ID);
 	T max = arr[0];
 	for (int i = 0; i < row * col; i++) {
@@ -249,7 +257,7 @@ T& TMatrix<T>::max() const {
 }
 
 template<class T>
-T& TMatrix<T>::min() const {
+T TMatrix<T>::min() const {
 	if (!arr) throw "Невозможно найти минимальный элемент в нулевой шаблонной матрице №" + to_string(ID);
 	T min = arr[0];
 	for (int i = 0; i < row * col; i++) {
@@ -363,4 +371,34 @@ template<class T>
 typename const TMatrix<T>::Tmp TMatrix<T>::operator[](int i) const {
 	if (i >= this->row || i < 0 || arr == nullptr) throw "Выход за размер массива в шаблонной матрице №" + to_string(ID);
 	return Tmp(this, i);
+}
+
+template<class T>
+bool TMatrix<T>::operator==(const TMatrix<T> &other) const {
+	return col == other.col && row == other.row;
+}
+
+template<class T>
+bool TMatrix<T>::operator!=(const TMatrix<T> &other) const {
+	return !Matrix::operator==(other);
+}
+
+template<class T>
+bool TMatrix<T>::operator>(const TMatrix<T> &other) const {
+	return col * row > other.col * other.row;
+}
+
+template<class T>
+bool TMatrix<T>::operator<(const TMatrix<T> &other) const {
+	return col * row < other.col * other.row;
+}
+
+template<class T>
+bool TMatrix<T>::operator>=(const TMatrix<T> &other) const {
+	return col * row >= other.col * other.row;
+}
+
+template<class T>
+bool TMatrix<T>::operator<=(const TMatrix<T> &other) const {
+	return col * row <= other.col * other.row;
 }

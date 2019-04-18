@@ -5,7 +5,9 @@
 #include "Matrix.h"
 #include "Fraction.h"
 #include "Polynomial.h"
+
 using namespace mathobj;
+using namespace std;
 
 template <typename T>
 T foo(int, int) {
@@ -37,13 +39,15 @@ int main() {
 		cout << setw(5) << tm2 * tm2;
 
 		TMatrix<double> tm3(3, 3, foo);
-		TMatrix<TMatrix<double>> tm4(1, 1, tm3);
+		TMatrix<double> tm5(5, 3, foo);
+		TMatrix<TMatrix<double>> tm4(1, 2, tm3, tm5);
 		cout << setw(5) << tm4;
 		cout << setw(5) << tm4 + tm4;
 		cout << setw(5) << tm4 - tm4;
-		cout << setw(5) << tm4 * tm4;
+		//cout << setw(5) << tm4 * tm4;
+		cout << setw(5) << tm4.min() << endl;
 
-		/*Polynomial p1(2, 8.0, 4.0, 8.0);
+		Polynomial p1(2, 8.0, 4.0, 8.0);
 		Polynomial p(2, 4.0, 2.0, 4.0);
 		TFraction<Polynomial> td(p, p1);
 		cout << setw(5) << td << endl;
@@ -59,8 +63,6 @@ int main() {
 		cout << setw(5) << tp - tp << endl;
 		cout << setw(5) << tp * tp << endl;
 		cout << setw(5) << tp / tp << endl;
-		cout << setw(5) << tp(2.0) << endl;
-		cout << setw(5) << tp[1] << endl;*/
 	}
 	catch (const string &msg) {
 		cerr << msg << endl;

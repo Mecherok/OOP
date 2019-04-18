@@ -1,12 +1,14 @@
 #pragma once
 #include <iostream>
 
+using namespace std;
+
 namespace mathobj {
 	template<typename T>
 	class TFraction;
 
 	template <class T>
-	std::ostream& operator<<(std::ostream &output, const TFraction<T> &f) {
+	ostream& operator<<(ostream &output, const TFraction<T> &f) {
 		if (!f.intPart && !f.numerator) {
 			return output << "0";
 		}
@@ -239,7 +241,7 @@ TFraction<T>& TFraction<T>::getMixedFraction() {
 template<class T>
 TFraction<T>& TFraction<T>::getImproperFraction() {
 	numerator = sign * (intPart * denominator + numerator);
-	intPart = 0;
+	intPart(0);
 	return *this;
 }
 
