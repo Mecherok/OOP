@@ -31,6 +31,7 @@ namespace mathobj {
 		void setCoefficient(int i, double number);
 		Polynomial& operator=(const Polynomial &other);
 		Polynomial& operator=(Polynomial &&other);
+		void swap(Polynomial &other);
 		double operator()(double x) const;
 		double operator[](int i) const;
 		Polynomial& operator+=(const Polynomial &other);

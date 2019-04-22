@@ -10,12 +10,12 @@ void Polynomial::correctDegree() noexcept {
 	if (degree == 0) return;
 	bool update = false;
 	while (degree && arr[degree] == 0) {
-		degree--;
+		--degree;
 		update = true;
 	}
 	if (update) {
 		double *temp = new double[degree + 1];
-		for (int i = 0; i <= degree; i++) {
+		for (int i = degree; i >= 0; i--) {
 			temp[i] = arr[i];
 		}
 
@@ -29,39 +29,39 @@ ostream& mathobj::operator<<(ostream &output, const Polynomial &p) noexcept {
 	if (p.degree == 0) return output << p.arr[0];
 	
 	if (p.arr[p.degree] == 1) {
-		cout << "x^" << p.degree;
+		output << "x^" << p.degree;
 	}
 	else if (p.arr[p.degree] == -1) {
-		cout << "-x^" << p.degree;
+		output << "-x^" << p.degree;
 	}
 	else {
-		cout << p.arr[p.degree] << "x^" << p.degree;
+		output << p.arr[p.degree] << "x^" << p.degree;
 	}
 
 	for (int i = p.degree - 1; i > 0; i--) {
 		if (p.arr[i] > 0) {
 			if (p.arr[i] == 1) {
-				cout << " + " << "x^" << i;
+				output << " + " << "x^" << i;
 			}
 			else {
-				cout << " + " << p.arr[i] << "x^" << i;
+				output << " + " << p.arr[i] << "x^" << i;
 			}
 		}
 		else if (p.arr[i] < 0) {
 			if (p.arr[i] == -1) {
-				cout << " - " << "x^" << i;
+				output << " - " << "x^" << i;
 			}
 			else {
-				cout << " - " << -p.arr[i] << "x^" << i;
+				output << " - " << -p.arr[i] << "x^" << i;
 			}
 		}
 	}
 
 	if (p.arr[0] > 0) {
-		cout << " + " << p.arr[0];
+		output << " + " << p.arr[0];
 	}
 	else if (p.arr[0] < 0) {
-		cout << " - " << -p.arr[0];
+		output << " - " << -p.arr[0];
 	}
 
 	return output;
@@ -114,13 +114,13 @@ Polynomial::Polynomial(int degree, const double *arr) {
 	if (degree < 0) throw "Невозможно создать объект №" + to_string(ID);
 	this->degree = degree;
 	if (arr) {
-		for (int i = 0; i <= degree; i++) {
-			if (arr[i] != 0) this->degree = i;
+		while (this->degree && arr[degree] == 0.0) {
+			--this->degree;
 		}
 	}
 	this->arr = new double[this->degree + 1];
-	for (int i = this->degree, j = 0; i >= 0; i--, j++) {
-		this->arr[i] = arr ? arr[j] : 0.0;
+	for (int i = this->degree; i >= 0; i--) {
+		this->arr[i] = arr ? arr[i] : 0.0;
 	}
 }
 
@@ -182,7 +182,7 @@ Polynomial& Polynomial::operator=(const Polynomial &other) {
 			arr = new double[degree + 1];
 		}
 		if (degree == 0 && !arr) arr = new double[1];
-		for (int i = 0; i <= degree; i++) {
+		for (int i = degree; i >= 0; i--) {
 			arr[i] = other.arr[i];
 		}
 	}
@@ -198,6 +198,11 @@ Polynomial& Polynomial::operator=(Polynomial &&other) {
 		other.degree = 0;
 	}
 	return *this;
+}
+
+void Polynomial::swap(Polynomial &other) {
+	std::swap(arr, other.arr);
+	std::swap(degree, other.degree);
 }
 
 double Polynomial::operator()(double x) const {
@@ -294,7 +299,7 @@ Polynomial& Polynomial::operator/=(const Polynomial &other) {
 	Polynomial result(temp.degree - other.degree);
 	
 	for (int i = 0; i <= result.degree; i++) {
-		if (other.arr[other.degree] == 0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
+		if (other.arr[other.degree] == 0.0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
 		result.arr[result.degree - i] = temp.arr[temp.degree - i] / other.arr[other.degree];
 		for (int j = 0; j <= other.degree; j++) {
 			temp.arr[temp.degree - j - i] -= other.arr[other.degree - j] * result.arr[result.degree - i];
@@ -314,7 +319,7 @@ Polynomial& Polynomial::operator%=(const Polynomial &other) {
 	Polynomial result(temp.degree - other.degree);
 
 	for (int i = 0; i <= result.degree; i++) {
-		if (other.arr[other.degree] == 0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
+		if (other.arr[other.degree] == 0.0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
 		result.arr[result.degree - i] = temp.arr[temp.degree - i] / other.arr[other.degree];
 		for (int j = 0; j <= other.degree; j++) {
 			temp.arr[temp.degree - j - i] -= other.arr[other.degree - j] * result.arr[result.degree - i];
