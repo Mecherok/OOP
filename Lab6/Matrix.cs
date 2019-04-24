@@ -14,7 +14,7 @@ namespace Lab6 {
         }
 
         ~Matrix() {
-            
+            arr = null;
         }
 
         public Matrix(int row, int col) : this(row, col, (double[,])null) {
@@ -63,7 +63,7 @@ namespace Lab6 {
         public Matrix(int row, int col, Func<int, int, double> func) : this(row, col) {
             for (int i = 0; i < this.row; i++) {
                 for (int j = 0; j < this.col; j++) {
-                    arr[i, j] = func(row, col);
+                    arr[i, j] = func(i, j);
                 }
             }
         }
@@ -110,11 +110,11 @@ namespace Lab6 {
 
         public double this[int i, int j] {
             get {
-                if (i < 0 || i > row && j < 0 || j > col) throw new ArgumentOutOfRangeException("Выход за границы массива в объекте №" + Convert.ToString(ID));
+                if ((i < 0 || i >= row) && (j < 0 || j >= col)) throw new ArgumentOutOfRangeException("Выход за границы массива в объекте №" + Convert.ToString(ID));
                 return arr[i, j];
             }
             set {
-                if (i < 0 || i > row && j < 0 || j > col) throw new ArgumentOutOfRangeException("Выход за границы массива в объекте №" + Convert.ToString(ID));
+                if ((i < 0 || i >= row) && (j < 0 || j >= col)) throw new ArgumentOutOfRangeException("Выход за границы массива в объекте №" + Convert.ToString(ID));
                 arr[i, j] = value;
             }
         }
@@ -159,16 +159,16 @@ namespace Lab6 {
         }
 
         public object Clone() {
-            return new Matrix(row, col, arr);
+            return new Matrix(this);
         }
 
         public static Matrix operator +(Matrix m1, Matrix m2) {
             if (!CheckSumOrSub(m1, m2)) throw new InvalidOperationException("Объекты №" + Convert.ToString(m1.ID) + " и №"+ Convert.ToString(m2.ID) + ": Сложение невозможно!");
-            Matrix temp = new Matrix(m1.row, m1.col);
+            Matrix temp = new Matrix(m1);
 
             for (int i = 0; i < temp.row; i++) {
                 for (int j = 0; j < temp.col; j++) {
-                    temp.arr[i, j] = m1.arr[i, j] + m2.arr[i, j];
+                    temp.arr[i, j] += m2.arr[i, j];
                 }
             }
 

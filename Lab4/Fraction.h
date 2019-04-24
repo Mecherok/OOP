@@ -37,6 +37,7 @@ namespace mathobj {
 		void setSign(int number);
 		static int getCount() noexcept;
 		int getID() const noexcept;
+		void swap(Fraction &other) noexcept;
 		Fraction& getMixedFraction() noexcept;
 		Fraction& getImproperFraction() noexcept;
 		Fraction& operator=(const Fraction &other);

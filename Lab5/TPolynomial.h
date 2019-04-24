@@ -11,40 +11,41 @@ namespace mathobj {
 	ostream& operator<<(ostream &output, const TPolynomial<T> &p) noexcept {
 		if (!p.arr) return output << 0.0;
 		if (p.degree == 0) return output << p.arr[0];
+		
 		if (p.arr[p.degree] == 1) {
-			cout << "x^" << p.degree;
+			output << "x^" << p.degree;
 		}
 		else if (p.arr[p.degree] == -1) {
-			cout << "-x^" << p.degree;
+			output << "-x^" << p.degree;
 		}
 		else {
-			cout << p.arr[p.degree] << "x^" << p.degree;
+			output << p.arr[p.degree] << "x^" << p.degree;
 		}
 
 		for (int i = p.degree - 1; i > 0; i--) {
 			if (p.arr[i] > 0) {
 				if (p.arr[i] == 1) {
-					cout << " + " << "x^" << i;
+					output << " + " << "x^" << i;
 				}
 				else {
-					cout << " + " << p.arr[i] << "x^" << i;
+					output << " + " << p.arr[i] << "x^" << i;
 				}
 			}
 			else if (p.arr[i] < 0) {
 				if (p.arr[i] == -1) {
-					cout << " - " << "x^" << i;
+					output << " - " << "x^" << i;
 				}
 				else {
-					cout << " - " << (-1) * p.arr[i] << "x^" << i;
+					output << " - " << (-1) * p.arr[i] << "x^" << i;
 				}
 			}
 		}
 
 		if (p.arr[0] > 0) {
-			cout << " + " << p.arr[0];
+			output << " + " << p.arr[0];
 		}
 		else if (p.arr[0] < 0) {
-			cout << " - " << (-1) * p.arr[0];
+			output << " - " << (-1) * p.arr[0];
 		}
 
 		return output;
@@ -120,6 +121,7 @@ namespace mathobj {
 		static int getCount() noexcept;
 		int getID() const noexcept;
 		void setCoefficient(int i, const T& number);
+		void swap(TPolynomial<T>& other);
 		TPolynomial<T>& operator=(const TPolynomial<T> &other);
 		TPolynomial<T>& operator=(TPolynomial<T> &&other);
 		T operator()(double x) const;
@@ -175,13 +177,13 @@ TPolynomial<T>::TPolynomial(int degree, const T *arr) {
 	if (degree < 0) throw "Невозможно создать объект №" + to_string(ID);
 	this->degree = degree;
 	if (arr) {
-		for (int i = 0; i <= degree; i++) {
-			if (arr[i] != 0) this->degree = i;
+		while (this->degree && arr[degree] == 0.0) {
+			--this->degree;
 		}
 	}
 	this->arr = new T[this->degree + 1];
-	for (int i = 0; i <= this->degree; i++) {
-		this->arr[i] = arr ? arr[i] : T(0);
+	for (int i = this->degree; i >= 0; i--) {
+		this->arr[i] = arr ? arr[i] : T();
 	}
 }
 
@@ -203,14 +205,25 @@ TPolynomial<T>::TPolynomial(const TPolynomial<T> &other) : TPolynomial<T>(other.
 
 template<class T>
 TPolynomial<T>::TPolynomial(TPolynomial<T> &&other) : TPolynomial<T>() {
-	*this = move(other);
+	swap(other);
 }
 
 template<class T>
 void TPolynomial<T>::correctDegree() noexcept {
 	if (degree == 0) return;
+	bool update = false;
 	while (degree && arr[degree] == 0) {
-		degree--;
+		--degree;
+		update = true;
+	}
+	if (update) {
+		T *temp = new T[degree + 1];
+		for (int i = degree; i >= 0; i--) {
+			temp[i] = arr[i];
+		}
+		if (arr) delete[] arr;
+		arr = move(temp);
+		temp = nullptr;
 	}
 }
 
@@ -245,6 +258,14 @@ void TPolynomial<T>::setCoefficient(int i, const T& number) {
 }
 
 template<class T>
+void TPolynomial<T>::swap(TPolynomial<T> &other) {
+	if (this != &other) {
+		std::swap(arr, other.arr);
+		std::swap(degree, other.degree);
+	}
+}
+
+template<class T>
 TPolynomial<T>& TPolynomial<T>::operator=(const TPolynomial<T> &other) {
 	if (this != &other) {
 		if (!other.arr) {
@@ -258,7 +279,7 @@ TPolynomial<T>& TPolynomial<T>::operator=(const TPolynomial<T> &other) {
 			arr = new T[degree + 1];
 		}
 		if (degree == 0 && !arr) arr = new T[1];
-		for (int i = 0; i <= degree; i++) {
+		for (int i = degree; i >= 0; i--) {
 			arr[i] = other.arr[i];
 		}
 	}
@@ -269,10 +290,9 @@ template<class T>
 TPolynomial<T>& TPolynomial<T>::operator=(TPolynomial<T> &&other) {
 	if (this != &other) {
 		if (arr) delete[] arr;
-		arr = other.arr;
-		degree = other.degree;
-		other.arr = nullptr;
-		other.degree = 0;
+		arr = nullptr;
+		degree = 0;
+		swap(other);
 	}
 	return *this;
 }

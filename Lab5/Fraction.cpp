@@ -111,7 +111,6 @@ Fraction::Fraction(int intPart, int numerator, int denominator, int sign) {
 	this->intPart = intPart;
 	this->numerator = numerator;
 	this->denominator = denominator;
-	this->sign = sign;
 	getMixedFraction();
 }
 
@@ -166,6 +165,15 @@ int Fraction::getCount() noexcept {
 
 int Fraction::getID() const noexcept {
 	return ID;
+}
+
+void Fraction::swap(Fraction &other) noexcept {
+	if (this != &other) {
+		std::swap(intPart, other.intPart);
+		std::swap(numerator, other.numerator);
+		std::swap(denominator, other.denominator);
+		std::swap(sign, other.sign);
+	}
 }
 
 Fraction& Fraction::getMixedFraction() noexcept {

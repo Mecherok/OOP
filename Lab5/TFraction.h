@@ -69,22 +69,21 @@ namespace mathobj {
 		TFraction(const T& intPart, const T& numerator, const T& denominator);
 		TFraction(const T& intPart, const T& numerator, const T& denominator, int sign);
 		TFraction(const TFraction<T> &other);
-		TFraction(TFraction<T> &&other);
-		T getIntPart() const;
-		T getNominator() const;
-		T getDenominator() const;
-		int getSign() const;
-		double getDouble() const;
+		TFraction(TFraction<T> &&other) noexcept;
+		T getIntPart() const noexcept;
+		T getNominator() const noexcept;
+		T getDenominator() const noexcept;
+		int getSign() const noexcept;
 		void setIntPart(const T& number);
 		void setNominator(const T& number);
 		void setDenominator(const T& number);
 		void setSign(int sign);
-		static int getCount();
-		int getID() const;
+		static int getCount() noexcept;
+		int getID() const noexcept;
 		TFraction<T>& getMixedFraction();
 		TFraction<T>& getImproperFraction();
 		TFraction<T>& operator=(const TFraction<T> &other);
-		TFraction<T>& operator=(TFraction<T> &&other);
+		TFraction<T>& operator=(TFraction<T> &&other) noexcept;
 		TFraction<T>& operator+=(const TFraction<T> &other);
 		TFraction<T>& operator-();
 		TFraction<T>& operator-=(const TFraction<T> &other);
@@ -167,33 +166,28 @@ TFraction<T>::TFraction(const TFraction<T>& other) : TFraction(other.intPart, ot
 }
 
 template<class T>
-TFraction<T>::TFraction(TFraction<T>&& other) : TFraction() {
+TFraction<T>::TFraction(TFraction<T>&& other) noexcept : TFraction() {
 	*this = move(other);
 }
 	
 template<class T>
-T TFraction<T>::getIntPart() const {
+T TFraction<T>::getIntPart() const noexcept {
 	return intPart;
 }
 	
 template<class T>
-T TFraction<T>::getNominator() const {
+T TFraction<T>::getNominator() const noexcept {
 	return numerator;
 }
 	
 template<class T>
-T TFraction<T>::getDenominator() const {
+T TFraction<T>::getDenominator() const noexcept {
 	return denominator;
 }
 	
 template<class T>
-int TFraction<T>::getSign() const {
+int TFraction<T>::getSign() const noexcept {
 	return sign < 0 ? -1 : 1;
-}
-	
-template<class T>
-double TFraction<T>::getDouble() const {
-	return (double)sign * (intPart * denominator + numerator) / denominator;
 }
 	
 template<class T>
@@ -222,12 +216,12 @@ void TFraction<T>::setSign(int sign) {
 }
 	
 template<class T>
-int TFraction<T>::getCount() {
+int TFraction<T>::getCount() noexcept {
 	return count;
 }
 	
 template<class T>
-int TFraction<T>::getID() const {
+int TFraction<T>::getID() const noexcept {
 	return ID;
 }
 	
@@ -257,7 +251,7 @@ TFraction<T>& TFraction<T>::operator=(const TFraction<T>& other) {
 }
 
 template<class T>
-TFraction<T>& TFraction<T>::operator=(TFraction<T>&& other) {
+TFraction<T>& TFraction<T>::operator=(TFraction<T>&& other) noexcept {
 	if (this != &other) {
 		numerator = move(other.numerator);
 		denominator = move(other.denominator);

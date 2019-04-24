@@ -25,14 +25,15 @@ namespace mathobj {
 		explicit Polynomial(int degree, double (*func)(int));
 		explicit Polynomial(int degree, double el, ...);
 		Polynomial(const Polynomial &other);
-		Polynomial(Polynomial &&other);
+		Polynomial(Polynomial &&other) noexcept;
 		int getDegree() const noexcept;
 		double getCoefficient(int i) const;
 		static int getCount() noexcept;
 		int getID() const noexcept;
 		void setCoefficient(int i, double number);
+		void swap(Polynomial &other) noexcept;
 		Polynomial& operator=(const Polynomial &other);
-		Polynomial& operator=(Polynomial &&other);
+		Polynomial& operator=(Polynomial &&other) noexcept;
 		double operator()(double x) const;
 		double operator[](int i) const;
 		Polynomial& operator+=(const Polynomial &other);

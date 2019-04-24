@@ -39,13 +39,11 @@ int main() {
 		cout << setw(5) << tm2 * tm2;
 
 		TMatrix<double> tm3(3, 3, foo);
-		TMatrix<double> tm5(5, 3, foo);
-		TMatrix<TMatrix<double>> tm4(1, 2, tm3, tm5);
+		TMatrix<TMatrix<double>> tm4(1, 1, tm3);
 		cout << setw(5) << tm4;
 		cout << setw(5) << tm4 + tm4;
 		cout << setw(5) << tm4 - tm4;
-		//cout << setw(5) << tm4 * tm4;
-		cout << setw(5) << tm4.min() << endl;
+		cout << setw(5) << tm4 * tm4;
 
 		Polynomial p1(2, 8.0, 4.0, 8.0);
 		Polynomial p(2, 4.0, 2.0, 4.0);
@@ -57,7 +55,7 @@ int main() {
 		cout << setw(5) << td / td << endl;
 
 		Fraction f(1, 2), f1(-4, 2), f2(3, 4);
-		TPolynomial<Fraction> tp(2, f, f1, f2);
+		TPolynomial<Fraction> tp(2, f2, f1, f);
 		cout << setw(5) << tp << endl;
 		cout << setw(5) << tp + tp << endl;
 		cout << setw(5) << tp - tp << endl;

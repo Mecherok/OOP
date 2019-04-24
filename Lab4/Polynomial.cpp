@@ -7,9 +7,8 @@ using namespace std;
 int Polynomial::count = 0;
 
 void Polynomial::correctDegree() noexcept {
-	if (degree == 0) return;
 	bool update = false;
-	while (degree && arr[degree] == 0) {
+	while (degree && arr[degree] == 0.0) {
 		--degree;
 		update = true;
 	}
@@ -18,7 +17,7 @@ void Polynomial::correctDegree() noexcept {
 		for (int i = degree; i >= 0; i--) {
 			temp[i] = arr[i];
 		}
-
+		if (arr) delete[] arr;
 		arr = temp;
 		temp = nullptr;
 	}
@@ -107,14 +106,13 @@ Polynomial::Polynomial(int degree) : Polynomial(degree, (const double*)nullptr) 
 
 }
 
-
 Polynomial::Polynomial(int degree, const double *arr) {
 	++count;
 	ID = count;
 	if (degree < 0) throw "Невозможно создать объект №" + to_string(ID);
 	this->degree = degree;
 	if (arr) {
-		while (this->degree && arr[degree] == 0.0) {
+		while (this->degree && arr[this->degree] == 0.0) {
 			--this->degree;
 		}
 	}
@@ -139,8 +137,8 @@ Polynomial::Polynomial(const Polynomial &other) : Polynomial(other.degree, other
 
 }
 
-Polynomial::Polynomial(Polynomial &&other) : Polynomial() {
-	*this = move(other);
+Polynomial::Polynomial(Polynomial &&other) noexcept : Polynomial() {
+	swap(other);
 }
 
 int Polynomial::getDegree() const noexcept {
@@ -168,6 +166,13 @@ void Polynomial::setCoefficient(int i, double number) {
 	correctDegree();
 }
 
+void Polynomial::swap(Polynomial &other) noexcept {
+	if (this != &other) {
+		std::swap(arr, other.arr);
+		std::swap(degree, other.degree);
+	}
+}
+
 Polynomial& Polynomial::operator=(const Polynomial &other) {
 	if (this != &other) {
 		if (!other.arr) {
@@ -189,20 +194,14 @@ Polynomial& Polynomial::operator=(const Polynomial &other) {
 	return *this;
 }
 
-Polynomial& Polynomial::operator=(Polynomial &&other) {
+Polynomial& Polynomial::operator=(Polynomial &&other) noexcept {
 	if (this != &other) {
 		if (arr) delete[] arr;
-		arr = other.arr;
-		degree = other.degree;
-		other.arr = nullptr;
-		other.degree = 0;
+		arr = nullptr;
+		degree = 0;
+		swap(other);
 	}
 	return *this;
-}
-
-void Polynomial::swap(Polynomial &other) {
-	std::swap(arr, other.arr);
-	std::swap(degree, other.degree);
 }
 
 double Polynomial::operator()(double x) const {
@@ -295,14 +294,13 @@ Polynomial& Polynomial::operator/=(const Polynomial &other) {
 
 	if (degree < other.degree) return *this = Polynomial(0);
 
-	Polynomial temp(*this);
-	Polynomial result(temp.degree - other.degree);
+	Polynomial result(degree - other.degree);
 	
+	if (other.arr[other.degree] == 0.0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
 	for (int i = 0; i <= result.degree; i++) {
-		if (other.arr[other.degree] == 0.0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
-		result.arr[result.degree - i] = temp.arr[temp.degree - i] / other.arr[other.degree];
+		result.arr[result.degree - i] = arr[degree - i] / other.arr[other.degree];
 		for (int j = 0; j <= other.degree; j++) {
-			temp.arr[temp.degree - j - i] -= other.arr[other.degree - j] * result.arr[result.degree - i];
+			arr[degree - j - i] -= other.arr[other.degree - j] * result.arr[result.degree - i];
 		}
 	}
 
@@ -315,19 +313,17 @@ Polynomial& Polynomial::operator%=(const Polynomial &other) {
 
 	if (degree < other.degree) return *this;
 
-	Polynomial temp(*this);
-	Polynomial result(temp.degree - other.degree);
-
-	for (int i = 0; i <= result.degree; i++) {
-		if (other.arr[other.degree] == 0.0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
-		result.arr[result.degree - i] = temp.arr[temp.degree - i] / other.arr[other.degree];
+	double k = 0;
+	if (other.arr[other.degree] == 0.0) throw "Деление на 0 в объектах №" + to_string(ID) + " и №" + to_string(other.ID);
+	for (int i = 0; i <= degree - other.degree; i++) {
+		k = arr[degree - i] / other.arr[other.degree];
 		for (int j = 0; j <= other.degree; j++) {
-			temp.arr[temp.degree - j - i] -= other.arr[other.degree - j] * result.arr[result.degree - i];
+			arr[degree - j - i] -= other.arr[other.degree - j] * k;
 		}
 	}
 
-	temp.correctDegree();
-	return *this = move(temp);
+	correctDegree();
+	return *this;
 }
 
 bool Polynomial::operator==(const Polynomial &other) const noexcept {

@@ -33,21 +33,13 @@ ostream& mathobj::operator<<(ostream &output, const Matrix &m) {
 Matrix mathobj::operator+(const Matrix &m1, const Matrix &m2) {
 	if (!m1.checkSumOrSub(m2)) throw "Внешний оператор + для матриц №" + to_string(m1.ID) + " и №" + to_string(m2.ID) +
 		": Ошибка! Сложение невозможно!";
-
-	Matrix tempSum(m1);
-	tempSum += m2;
-
-	return tempSum;
+	return move(Matrix(m1) += m2);
 }
 
 Matrix mathobj::operator-(const Matrix &m1, const Matrix &m2) {
 	if (!m1.checkSumOrSub(m2)) throw "Внешний оператор - для матриц №" + to_string(m1.ID) + " и №" + to_string(m2.ID) +
 		": Ошибка! Вычитание невозможно!";
-
-	Matrix tempSub(m1);
-	tempSub -= m2;
-
-	return tempSub;
+	return move(Matrix(m1) -= m2);
 }
 
 Matrix mathobj::operator*(const Matrix &m1, const Matrix &m2) {
@@ -67,9 +59,7 @@ Matrix mathobj::operator*(const Matrix &m1, const Matrix &m2) {
 }
 
 Matrix mathobj::operator*(const Matrix &m, double k) {
-	Matrix tempScalarMul = m;
-	tempScalarMul.operator*=(k);
-	return tempScalarMul;
+	return move(Matrix(m) *= k);
 }
 
 Matrix mathobj::operator*(double k, const Matrix &m) {
@@ -166,20 +156,20 @@ Matrix::Matrix(const Matrix &other) : Matrix(other.row, other.col, other.arr) {
 
 }
 
-Matrix::Matrix(Matrix &&other) : Matrix(0, 0) {
+Matrix::Matrix(Matrix &&other) noexcept : Matrix(0, 0) {
 	*this = move(other);
 }
 
-bool Matrix::checkSumOrSub(const Matrix &other) const {
-	return this->col == other.col && this->row == other.row;
+bool Matrix::checkSumOrSub(const Matrix &other) const noexcept {
+	return this->col == other.col && this->row == other.row && arr && other.arr;
 }
 
-bool Matrix::checkMul(const Matrix &other) const {
-	return this->col == other.row;
+bool Matrix::checkMul(const Matrix &other) const noexcept {
+	return this->col == other.row && arr && other.arr;
 }
 
 double Matrix::max() const {
-	if (arr == nullptr) throw "Невозможно найти максимальный элемент в нулевой матрице №" + to_string(ID);
+	if (!arr) throw "Невозможно найти максимальный элемент в нулевой матрице №" + to_string(ID);
 	double max = arr[0];
 	for (int i = 0; i < row * col; i++) {
 		if (arr[i] > max) max = arr[i];
@@ -189,7 +179,7 @@ double Matrix::max() const {
 }
 
 double Matrix::min() const {
-	if (arr == nullptr) throw "Невозможно найти минимальный элемент в нулевой матрице №" + to_string(ID);
+	if (!arr) throw "Невозможно найти минимальный элемент в нулевой матрице №" + to_string(ID);
 	double min = arr[0];
 	for (int i = 0; i < row * col; i++) {
 		if (arr[i] < min) min = arr[i];
@@ -198,19 +188,19 @@ double Matrix::min() const {
 	return min;
 }
 
-int Matrix::getCount(){
+int Matrix::getCount() noexcept {
 	return count;
 }
 
-int Matrix::getID() const {
+int Matrix::getID() const noexcept {
 	return ID;
 }
 
-int Matrix::getRow() const {
+int Matrix::getRow() const noexcept {
 	return row;
 }
 
-int Matrix::getCol() const {
+int Matrix::getCol() const noexcept {
 	return col;
 }
 
@@ -232,7 +222,7 @@ Matrix& Matrix::operator=(const Matrix &other) {
 	return *this;
 }
 
-Matrix& Matrix::operator=(Matrix &&other) {
+Matrix& Matrix::operator=(Matrix &&other) noexcept {
 #ifdef _DEBUG
 	cout << "Оператор присваивания перемещения для матрицы №" << ID << endl;
 #endif
@@ -278,6 +268,8 @@ Matrix& Matrix::operator*=(const Matrix &other) {
 }
 
 Matrix& Matrix::operator*=(double k) {
+	if (!arr) throw "Оператор *= k для матрицы №" + to_string(ID) + ": Ошибка! Умножение невозможно!";
+
 	for (int i = 0; i < row * col; i++) {
 		arr[i] *= k;
 	}
