@@ -55,7 +55,8 @@ int main() {
 		cout << setw(5) << td / td << endl;
 
 		Fraction f(1, 2), f1(-4, 2), f2(3, 4);
-		TPolynomial<Fraction> tp(2, f2, f1, f);
+		const Fraction coef[] = { f, f1, f2 };
+		TPolynomial<Fraction> tp(2, coef);
 		cout << setw(5) << tp << endl;
 		cout << setw(5) << tp + tp << endl;
 		cout << setw(5) << tp - tp << endl;

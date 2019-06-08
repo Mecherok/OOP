@@ -1,57 +1,49 @@
 ﻿using System;
 using System.Text;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Lab6 {
-    class Matrix : ICloneable {
+    class Matrix : ICloneable, IFormattable, IEquatable<Matrix>, IEnumerable<double> {
         private double[,] arr;
-        private int row;
-        private int col;
         private static int count;
-        private int ID;
+        private int id;
 
         public Matrix() : this(0, 0) {
-
+             
         }
 
         ~Matrix() {
             arr = null;
         }
 
-        public Matrix(int row, int col) : this(row, col, (double[,])null) {
+        public Matrix(int row, int col) {
+            count++;
+            id = count;
+            if (row < 0 || col < 0) throw new ArgumentException(String.Format($"Неверный размер матрицы №{id}!"));
+            arr = new double[row, col];
+        }
+
+        public Matrix(int row_col) : this(row_col, row_col) {
 
         }
 
-        public Matrix(int row, int col, double[,] arr) {
-            count++;
-            ID = count;
-            if (row * col == 0) {
-                this.row = 0;
-                this.col = 0;
-                this.arr = null;
-            }
-            else {
-                this.row = row;
-                this.col = col;
-                this.arr = new double[this.row, this.col];
-                for (int i = 0; i < this.row; i++) {
-                    for (int j = 0; j < this.col; j++) {
-                        this.arr[i, j] = arr != null ? arr[i, j] : 0.0;
-                    }
+        public Matrix(double[,] arr) : this(arr == null ? throw new ArgumentNullException("Ссылка на объект не указывает на экземпляр объекта") 
+            : arr.GetLength(0), arr.GetLength(1)) {
+            for (int i = 0; i < arr.GetLength(0); i++) {
+                for (int j = 0; j < arr.GetLength(1); j++) {
+                    this.arr[i, j] = arr[i, j];
                 }
             }
         }
 
-        public Matrix(int row_col, double[,] arr) : this(row_col, row_col, arr) {
-
-        }
-
         public Matrix(int row, int col, params double[] num) : this(row, col) {
             int k = 0;
-            for (int i = 0; i < this.row; i++) {
-                for (int j = 0; j < this.col; j++) {
+            for (int i = 0; i < arr.GetLength(0); i++) {
+                for (int j = 0; j < arr.GetLength(1); j++) {
                     if (k == num.Length) return;
                     arr[i, j] = num[k];
-                    k++;
+                    ++k;
                 }
             }
         }
@@ -61,8 +53,8 @@ namespace Lab6 {
         }
 
         public Matrix(int row, int col, Func<int, int, double> func) : this(row, col) {
-            for (int i = 0; i < this.row; i++) {
-                for (int j = 0; j < this.col; j++) {
+            for (int i = 0; i < arr.GetLength(0); i++) {
+                for (int j = 0; j < arr.GetLength(1); j++) {
                     arr[i, j] = func(i, j);
                 }
             }
@@ -72,27 +64,27 @@ namespace Lab6 {
 
         }
 
-        public Matrix(Matrix m) : this(m.row, m.col, m.arr) {
+        public Matrix(Matrix m) : this(m?.arr) {
 
         }
 
         public static bool CheckSumOrSub(Matrix m1, Matrix m2) {
-            return m1.col == m2.col && m1.row == m2.row;
+            return m1.arr.GetLength(0) == m2.arr.GetLength(0) && m2.arr.GetLength(1) == m2.arr.GetLength(1);
         }
 
         public static bool CheckMul(Matrix m1, Matrix m2) {
-            return m1.col == m2.row;
+            return m1.arr.GetLength(1) == m2.arr.GetLength(0);
         }
 
         public int Row {
             get {
-                return row;
+                return arr.GetLength(0);
             }
         }
 
         public int Col {
             get {
-                return col;
+                return arr.GetLength(1);
             }
         }
 
@@ -102,55 +94,52 @@ namespace Lab6 {
             }
         }
 
-        public int getID {
+        public int ID {
             get {
-                return ID;
+                return id;
             }
         }
 
         public double this[int i, int j] {
             get {
-                if ((i < 0 || i >= row) && (j < 0 || j >= col)) throw new ArgumentOutOfRangeException("Выход за границы массива в объекте №" + Convert.ToString(ID));
+                if ((i < 0 || i >= arr.GetLength(0)) && (j < 0 || j >= arr.GetLength(1))) throw
+                    new IndexOutOfRangeException(String.Format($"Выход за границы массива в объекте №{id}!"));
                 return arr[i, j];
             }
             set {
-                if ((i < 0 || i >= row) && (j < 0 || j >= col)) throw new ArgumentOutOfRangeException("Выход за границы массива в объекте №" + Convert.ToString(ID));
+                if ((i < 0 || i >= arr.GetLength(0)) && (j < 0 || j >= arr.GetLength(1))) throw
+                    new IndexOutOfRangeException(String.Format($"Выход за границы массива в объекте №{id}!"));
                 arr[i, j] = value;
             }
         }
 
-        public double Max() {
-            if (arr == null) throw new ArgumentNullException("Невозможно выполнить действие в нулевом объекте №" + Convert.ToString(ID));
-            double max = arr[0, 0];
-
-            for (int i = 0; i < col; i++) {
-                for (int j = 0; j < row; j++) {
-                    if (arr[i, j] > max) max = arr[i, j];
-                }
-            }
-
-            return max;
+        object ICloneable.Clone() {
+            return Clone();
         }
 
-        public double Min() {
-            if (arr == null) throw new ArgumentNullException("Невозможно выполнить действие в нулевом объекте №" + Convert.ToString(ID));
-            double min = arr[0, 0];
-
-            for (int i = 0; i < col; i++) {
-                for (int j = 0; j < row; j++) {
-                    if (arr[i, j] < min) min = arr[i, j];
-                }
-            }
-
-            return min;
+        public Matrix Clone() {
+            return new Matrix(this);
         }
 
         public override string ToString() {
+            return ToString(null, null);
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider) {
+            format = format ?? "G";
+            formatProvider = formatProvider ?? System.Globalization.CultureInfo.CurrentCulture;
+
+            var splitted = format.Split(':');
+            var numberFormat = splitted[0];
+            int width = splitted.Length > 1 ? int.Parse(splitted[1]) : 0;
+
+            var resultFormat = splitted.Length > 1 ? $"{{0,{width}:{numberFormat}}}" : $"{{0:{numberFormat}}} ";
+
             var str = new StringBuilder();
 
-            for (int i = 0; i < row; i++) {
-                for (int j = 0; j < col; j++) {
-                    str.Append($"{arr[i, j]}  ");
+            for (int i = 0; i < arr.GetLength(0); i++) {
+                for (int j = 0; j < arr.GetLength(1); j++) {
+                    str.AppendFormat(formatProvider, resultFormat, arr[i, j]);
                 }
                 str.AppendLine();
             }
@@ -158,16 +147,38 @@ namespace Lab6 {
             return str.ToString();
         }
 
-        public object Clone() {
-            return new Matrix(this);
+        public bool Equals(Matrix other) {
+            if (arr.GetLength(0) != other.arr.GetLength(0) || arr.GetLength(1) != other.arr.GetLength(1)) {
+                return false;
+            }
+            else {
+                for (int i = 0; i < arr.GetLength(0); i++) {
+                    for (int j = 0; j < arr.GetLength(1); j++) {
+                        if (arr[i, j] != other.arr[i, j]) return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public IEnumerator<double> GetEnumerator() {
+            for (int i = 0; i < arr.GetLength(0); i++) {
+                for (int j = 0; j < arr.GetLength(1); j++) {
+                    yield return arr[i, j];
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
         }
 
         public static Matrix operator +(Matrix m1, Matrix m2) {
-            if (!CheckSumOrSub(m1, m2)) throw new InvalidOperationException("Объекты №" + Convert.ToString(m1.ID) + " и №"+ Convert.ToString(m2.ID) + ": Сложение невозможно!");
+            if (!CheckSumOrSub(m1, m2)) throw new InvalidOperationException(String.Format($"Объекты №{m1.id} и №{m2.id} : Сложение невозможно!"));
             Matrix temp = new Matrix(m1);
 
-            for (int i = 0; i < temp.row; i++) {
-                for (int j = 0; j < temp.col; j++) {
+            for (int i = 0; i < temp.arr.GetLength(0); i++) {
+                for (int j = 0; j < temp.arr.GetLength(1); j++) {
                     temp.arr[i, j] += m2.arr[i, j];
                 }
             }
@@ -176,12 +187,12 @@ namespace Lab6 {
         }
 
         public static Matrix operator -(Matrix m1, Matrix m2) {
-            if (!CheckSumOrSub(m1, m2)) throw new InvalidOperationException("Объекты №" + Convert.ToString(m1.ID) + " и №" + Convert.ToString(m2.ID) + ": Вычитание невозможно!");
-            Matrix temp = new Matrix(m1.row, m1.col);
-
-            for (int i = 0; i < temp.row; i++) {
-                for (int j = 0; j < temp.col; j++) {
-                    temp.arr[i, j] = m1.arr[i, j] - m2.arr[i, j];
+            if (!CheckSumOrSub(m1, m2)) throw new InvalidOperationException(String.Format($"Объекты №{m1.id} и №{m2.id} : Вычитание невозможно!"));
+            Matrix temp = new Matrix(m1);
+              
+            for (int i = 0; i < temp.arr.GetLength(0); i++) {
+                for (int j = 0; j < temp.arr.GetLength(1); j++) {
+                    temp.arr[i, j] -= m2.arr[i, j];
                 }
             }
 
@@ -189,12 +200,12 @@ namespace Lab6 {
         }
 
         public static Matrix operator *(Matrix m1, Matrix m2) {
-            if (!CheckMul(m1, m2)) throw new InvalidOperationException("Объекты №" + Convert.ToString(m1.ID) + " и №" + Convert.ToString(m2.ID) + ": Умножение невозможно!");
-            Matrix temp = new Matrix(m1.row, m2.col);
+            if (!CheckMul(m1, m2)) throw new InvalidOperationException(String.Format($"Объекты №{m1.id} и №{m2.id} : Умножение невозможно!"));
+            Matrix temp = new Matrix(m1.arr.GetLength(0), m2.arr.GetLength(1));
 
-            for (int i = 0; i < temp.row; i++) {
-                for (int j = 0; j < temp.col; j++) {
-                    for (int k = 0; k < m1.col; k++) {
+            for (int i = 0; i < temp.arr.GetLength(0); i++) {
+                for (int j = 0; j < temp.arr.GetLength(1); j++) {
+                    for (int k = 0; k < m1.arr.GetLength(1); k++) {
                         temp.arr[i, j] += m1.arr[i, k] * m2.arr[k, j];
                     }
                 }
@@ -204,10 +215,10 @@ namespace Lab6 {
         }
 
         public static Matrix operator *(Matrix m1, double k) {
-            Matrix temp = new Matrix(m1.row, m1.col);
+            Matrix temp = new Matrix(m1);
 
-            for (int i = 0; i < temp.row; i++) {
-                for (int j = 0; j < temp.col; j++) {
+            for (int i = 0; i < temp.arr.GetLength(0); i++) {
+                for (int j = 0; j < temp.arr.GetLength(1); j++) {
                     temp.arr[i, j] *= k;
                 }
             }

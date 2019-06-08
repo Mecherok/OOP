@@ -122,7 +122,7 @@ int Fraction::getIntPart() const noexcept {
 	return intPart;
 }
 
-int Fraction::getNominator() const noexcept {
+int Fraction::getNumerator() const noexcept {
 	return numerator;
 }
 
@@ -143,7 +143,7 @@ void Fraction::setIntPart(int number) {
 	getMixedFraction();
 }
 
-void Fraction::setNominator(int number) {
+void Fraction::setNumerator(int number) {
 	numerator = number;
 	getMixedFraction();
 }

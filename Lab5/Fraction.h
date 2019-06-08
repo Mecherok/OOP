@@ -27,12 +27,12 @@ namespace mathobj {
 		Fraction(int intPart, int numerator, int denomirator, int sign);
 		Fraction(const Fraction &other);
 		int getIntPart() const noexcept;
-		int getNominator() const noexcept;
+		int getNumerator() const noexcept;
 		int getDenominator() const noexcept;
 		int getSign() const noexcept;
 		double getDouble() const noexcept;
 		void setIntPart(int number);
-		void setNominator(int number);
+		void setNumerator(int number);
 		void setDenominator(int number);
 		void setSign(int number);
 		static int getCount() noexcept;

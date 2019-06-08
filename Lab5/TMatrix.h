@@ -99,7 +99,7 @@ namespace mathobj {
 		explicit TMatrix(int row, int col, T (*func)(int, int));
 		explicit TMatrix(int row_col, T (*func)(int, int));
 		TMatrix(const TMatrix<T> &other);
-		TMatrix(TMatrix<T> &&other);
+		TMatrix(TMatrix<T> &&other) noexcept;
 		bool checkSumOrSub(const TMatrix<T> &other) const noexcept;
 		bool checkMul(const TMatrix<T> &other) const noexcept;
 		const T& max() const;
@@ -110,7 +110,7 @@ namespace mathobj {
 		int getCol() const noexcept;
 		void swap(TMatrix<T> &other) noexcept;
 		TMatrix<T>& operator=(const TMatrix<T> &other);
-		TMatrix<T>& operator=(TMatrix<T> &&other);
+		TMatrix<T>& operator=(TMatrix<T> &&other) noexcept;
 		TMatrix<T>& operator+=(const TMatrix<T> &other);
 		TMatrix<T>& operator-=(const TMatrix<T> &other);
 		TMatrix<T>& operator*=(const TMatrix<T> &other);
@@ -233,7 +233,7 @@ TMatrix<T>::TMatrix(const TMatrix<T> &other) : TMatrix(other.row, other.col, oth
 }
 
 template<class T>
-TMatrix<T>::TMatrix(TMatrix<T> &&other) : TMatrix(0, 0) {
+TMatrix<T>::TMatrix(TMatrix<T> &&other) noexcept : TMatrix(0, 0) {
 	swap(other);
 }
 
@@ -320,7 +320,7 @@ TMatrix<T>& TMatrix<T>::operator=(const TMatrix<T> &other) {
 }
 
 template<class T>
-TMatrix<T>& TMatrix<T>::operator=(TMatrix<T> &&other) {
+TMatrix<T>& TMatrix<T>::operator=(TMatrix<T> &&other) noexcept {
 	if (this != &other) {
 		if (arr) delete[] arr;
 		arr = nullptr;
