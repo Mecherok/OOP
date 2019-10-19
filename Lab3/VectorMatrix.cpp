@@ -104,7 +104,7 @@ bool Base::checkSumOrSub(const Base &other) const noexcept {
 }
 
 bool Base::checkMul(const Base &other) const noexcept {
-	return row == other.col;
+	return col == other.row;
 }
 
 bool Base::checkToVector() const noexcept {
